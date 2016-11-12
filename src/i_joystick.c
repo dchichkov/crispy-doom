@@ -31,6 +31,20 @@
 #include "m_config.h"
 #include "m_misc.h"
 
+// NETWORKING
+//
+
+#include <SDL_net.h>
+
+#define DEFAULT_PORT 6667
+
+static boolean initted = false;
+static int port = DEFAULT_PORT;
+static UDPsocket udpsocket;
+static UDPpacket *recvpacket;
+
+
+
 // When an axis is within the dead zone, it is set to zero.
 // This is 5% of the full range:
 
@@ -107,6 +121,19 @@ static boolean IsValidAxis(int axis)
 
 void I_InitJoystick(void)
 {
+    udpsocket = SDLNet_UDP_Open(port);
+
+    if (udpsocket == NULL)
+    {
+        I_Error("NET_SDL_InitServer: Unable to bind to port %i", port);
+    }
+
+    recvpacket = SDLNet_AllocPacket(1500);
+
+
+
+
+
     if (!usejoystick || joystick_index < 0)
     {
         return;
